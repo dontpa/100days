@@ -18,32 +18,26 @@ struct ContentView: View {
     @State private var sourceUnit = Unit.Fahrenheit
     @State private var targetUnit = Unit.Celsius
     @State private var source = 0.0
-    var result : Double {
-        if sourceUnit == targetUnit {
-            return source
-        }
-        if sourceUnit == .Celsius && targetUnit == .Fahrenheit {
-            return celsiusToFahrenheit(source: source)
-        }
-        if sourceUnit == .Celsius && targetUnit == .Kelvin {
-            return celsiusToKelvin(source: source)
-        }
-        if sourceUnit == .Fahrenheit && targetUnit == .Celsius {
-            return fahrenheitToCelsius(source: source)
-        }
-        if sourceUnit == .Fahrenheit && targetUnit == .Kelvin {
-            return celsiusToKelvin(source: fahrenheitToCelsius(source: source))
-        }
-        if sourceUnit == .Kelvin && targetUnit == .Celsius {
-            return kelvinToCelsius(source: source)
-        }
-        if sourceUnit == .Kelvin && targetUnit == .Fahrenheit {
-            return celsiusToFahrenheit(source: kelvinToCelsius(source: source))
-        }
-        fatalError("Unsupported unit conversion")
-    }
-    
     @FocusState private var inputIsFocused : Bool
+    
+    var result : Double {
+        switch (sourceUnit, targetUnit) {
+        case (.Celsius, .Fahrenheit):
+            celsiusToFahrenheit(source: source)
+        case (.Celsius, .Kelvin):
+            celsiusToKelvin(source: source)
+        case (.Fahrenheit, .Celsius):
+            fahrenheitToCelsius(source: source)
+        case (.Fahrenheit, .Kelvin):
+            celsiusToKelvin(source: fahrenheitToCelsius(source: source))
+        case (.Kelvin, .Celsius):
+            kelvinToCelsius(source: source)
+        case (.Kelvin, .Fahrenheit):
+            celsiusToFahrenheit(source: kelvinToCelsius(source: source))
+        default:
+            source
+        }
+    }
     
     func celsiusToFahrenheit(source : Double ) -> Double {
         return source * 9 / 5 + 32
@@ -65,32 +59,35 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
+                Section("Source Unit") {
                     Picker("Source Unit", selection: $sourceUnit) {
                         ForEach(Unit.allCases, id:\.self) {
                             Text($0.rawValue)
                         }
                     }
+                    .pickerStyle(.segmented)
                 }
                 Section {
-                    TextField("input", value: $source, format: .number)
+                    TextField("Enter value", value: $source, format: .number)
                         .keyboardType(.decimalPad)
                         .focused($inputIsFocused)
                     
                 }
-                Section {
+                Section("Target Unit") {
                     Picker("Target Unit", selection: $targetUnit) {
                         ForEach(Unit.allCases, id:\.self) {
                             Text($0.rawValue)
                         }
                     }
+                    .pickerStyle(.segmented)
                 }
                 Section {
-                    Text("result : \(result)")
+                    Text("result : \(result, specifier: "%.2f")")
                 }
             }
             .toolbar{
-                if inputIsFocused {
+                ToolbarItemGroup(placement: .keyboard){
+                    Spacer()
                     Button("Done") {
                         inputIsFocused = false
                     }
