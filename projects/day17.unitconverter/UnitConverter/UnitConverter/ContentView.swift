@@ -5,12 +5,10 @@
 //  Created by mrw on 2024/9/4.
 //
 
-
-
 import SwiftUI
 
 struct ContentView: View {
-    enum Unit: String, CaseIterable{
+    enum Unit: String, CaseIterable {
         case Celsius = "Celsius(°C)"
         case Fahrenheit = "Fahrenheit(°F)"
         case Kelvin = "Kelvin(K)"
@@ -18,9 +16,9 @@ struct ContentView: View {
     @State private var sourceUnit = Unit.Fahrenheit
     @State private var targetUnit = Unit.Celsius
     @State private var source = 0.0
-    @FocusState private var inputIsFocused : Bool
-    
-    var result : Double {
+    @FocusState private var inputIsFocused: Bool
+
+    var result: Double {
         switch (sourceUnit, targetUnit) {
         case (.Celsius, .Fahrenheit):
             celsiusToFahrenheit(source: source)
@@ -38,30 +36,29 @@ struct ContentView: View {
             source
         }
     }
-    
-    func celsiusToFahrenheit(source : Double ) -> Double {
+
+    func celsiusToFahrenheit(source: Double) -> Double {
         return source * 9 / 5 + 32
     }
-    
-    func celsiusToKelvin(source : Double) -> Double {
+
+    func celsiusToKelvin(source: Double) -> Double {
         return source + 273.15
     }
-    
-    func fahrenheitToCelsius(source : Double) -> Double {
+
+    func fahrenheitToCelsius(source: Double) -> Double {
         (source - 32) * 5 / 9
     }
-    
-    func kelvinToCelsius(source : Double) -> Double {
+
+    func kelvinToCelsius(source: Double) -> Double {
         source - 273.15
     }
-    
-    
+
     var body: some View {
         NavigationStack {
             Form {
                 Section("Source Unit") {
                     Picker("Source Unit", selection: $sourceUnit) {
-                        ForEach(Unit.allCases, id:\.self) {
+                        ForEach(Unit.allCases, id: \.self) {
                             Text($0.rawValue)
                         }
                     }
@@ -71,11 +68,11 @@ struct ContentView: View {
                     TextField("Enter value", value: $source, format: .number)
                         .keyboardType(.decimalPad)
                         .focused($inputIsFocused)
-                    
+
                 }
                 Section("Target Unit") {
                     Picker("Target Unit", selection: $targetUnit) {
-                        ForEach(Unit.allCases, id:\.self) {
+                        ForEach(Unit.allCases, id: \.self) {
                             Text($0.rawValue)
                         }
                     }
@@ -85,8 +82,8 @@ struct ContentView: View {
                     Text("result : \(result, specifier: "%.2f")")
                 }
             }
-            .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") {
                         inputIsFocused = false
